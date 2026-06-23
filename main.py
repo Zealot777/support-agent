@@ -1,0 +1,107 @@
+import dotenv
+dotenv.load_dotenv()
+
+from openai import OpenAI
+import asyncio
+import streamlit as st
+from agents import (
+    Runner,
+    SQLiteSession,
+    InputGuardrailTripwireTriggered,
+)
+from models import UserAccountContext
+# 작성하신 triage_agent를 가져옵니다.
+from my_agents.triage_agent import triage_agent
+
+client = OpenAI()
+
+# 1. 유저 계정 컨텍스트 설정
+user_account_ctx = UserAccountContext(
+    customer_id=1,
+    name="zealot",
+    tier="basic",
+    email="zealot@example.com"
+)
+
+# 2. 세션 데이터베이스 및 에이전트 상태 초기화
+if "session" not in st.session_state:
+    st.session_state["session"] = SQLiteSession(
+        "chat-history",
+        "customer-support-memory.db",
+    )
+session = st.session_state["session"]
+
+# 현재 대화를 제어하는 에이전트 상태값 (기본값은 triage_agent)
+if "agent" not in st.session_state:
+    st.session_state["agent"] = triage_agent
+
+
+async def main():
+    st.title("🍔 Restaurant Bot")
+
+    # 3. 사이드바 구성 (현재 연결된 에이전트 정보 시각화)
+    with st.sidebar:
+        st.subheader("🤖 Agent 상태")
+        st.success(f"현재 활성화: **{st.session_state['agent'].name}**")
+        
+        reset = st.button("대화 메모리 리셋")
+        if reset:
+            await session.clear_session()
+            st.session_state["agent"] = triage_agent  # 에이전트도 초기 상태로 리셋
+            st.rerun()
+        
+        items = await session.get_items()
+        st.write("세션 내부 메타데이터:", items)
+
+    # 4. 이전 대화 기록 불러와 화면에 렌더링
+    messages = await session.get_items()
+    for message in messages:
+        if message.get("role") in ["user", "assistant"] and message.get("content"):
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+
+    # 5. 유저 채팅 입력창 생성
+    user_message = st.chat_input("레스토랑 봇에게 메시지를 보내세요 (예: 예약하고 싶어)")
+
+    if user_message:
+        # 유저가 입력한 텍스트 즉시 렌더링
+        with st.chat_message("user"):
+            st.write(user_message)
+        
+        # 에이전트 응답 영역 생성 및 스트리밍 시작
+        with st.chat_message("assistant"):
+            text_placeholder = st.empty()
+            response = ""
+
+            try:
+                # [핵심] 현재 활성화된 에이전트(st.session_state["agent"])를 주입하여 동적 실행
+                stream = Runner.run_streamed(
+                    starting_agent=st.session_state["agent"],
+                    input=user_message,
+                    session=session,
+                    context=user_account_ctx,
+                )
+
+                # 텍스트가 생성되는 대로 화면에 낱개 단위(delta)로 업데이트
+                async for event in stream.stream_events():
+                    if event.type == "raw_response_event":
+                        if event.data.type == "response.output_text.delta":
+                            response += event.data.delta
+                            text_placeholder.write(response.replace("$", "\$"))
+                
+                # 6. [Handoff 핵심 부문] 스트리밍 완료 후 내부적으로 전환된 최종 에이전트 상태 확인
+                if hasattr(stream, "last_agent") and stream.last_agent:
+                    st.session_state["agent"] = stream.last_agent
+
+            except InputGuardrailTripwireTriggered:
+                text_placeholder.write("⚠️ 부적절한 요청이 감지되어 답변을 중단합니다.")
+            except Exception as e:
+                text_placeholder.write(f"❌ 실행 중 오류가 발생했습니다: {str(e)}")
+        
+        # 에이전트 전환 상태를 사이드바 등에 즉시 반영하기 위해 화면 강제 리프레시
+        st.rerun()
+
+
+# Streamlit 앱 실행 진입점
+if __name__ == "__main__":
+    asyncio.run(main())
