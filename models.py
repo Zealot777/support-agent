@@ -17,6 +17,13 @@ class InputGuardRailOutput(BaseModel):
     is_off_topic: bool
     reason: str
 
+class OutputGuardRailOutput(BaseModel):
+    contains_off_topic: bool
+    contains_menu_data: bool
+    contains_off_topic: bool
+
+    reason: str 
+
 # 3. 개별 메뉴(요리) 상세 정보
 class Dish(BaseModel):  # 파이썬 클래스 네이밍 컨벤션에 따라 대문자 Dish 추천
     name: str
