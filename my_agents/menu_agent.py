@@ -1,7 +1,6 @@
 from agents import Agent, RunContextWrapper
 from models import UserAccountContext, TODAYS_RESTAURANT_DATA
 
-
 def menu_agent_instructions(
     wrapper: RunContextWrapper[UserAccountContext],
     agent: Agent[UserAccountContext],

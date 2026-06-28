@@ -1,6 +1,6 @@
 from agents import Agent, RunContextWrapper
 from models import UserAccountContext, TODAYS_RESTAURANT_DATA
-from my_agents.order_agent import order_agent
+
 
 def order_agent_instructions(
     wrapper: RunContextWrapper[UserAccountContext],
@@ -35,6 +35,5 @@ order_agent = Agent(
     quantity confirmation, order cancellation,
     and final payment summary.
     """,
-    handoffs=[order_agent],
     instructions=order_agent_instructions,
 )
