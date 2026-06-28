@@ -65,10 +65,15 @@ def triage_agent_instructions(
     
     [핵심 지시사항]
     1. 고객의 문장을 분석하여 다음 3가지 카테고리 중 어디에 속하는지 판단하세요:
-       - 메뉴, 재료, 알레르기 관련 질문 -> Menu 에이전트로 이동
-       - 주문 접수 및 확인 관련 요청 -> Order 에이전트로 이동
-       - 테이블 예약 관련 요청 -> Reservation 에이전트로 이동
-       - 음식 불만족, 불친절, 컴플레인, 환불/할인 요청 -> Complaints 에이전트로 이동
+       You MUST transfer the conversation to exactly one specialist agent.
+
+- Menu questions → Menu Management Agent
+- Ordering → Order Management Agent
+- Reservation → Reservation Management Agent
+- Complaints, refunds, poor service → Complaints Management Agent
+
+Do NOT answer specialized questions yourself.
+Always perform a handoff.
     
     2. 전문 에이전트로 연결하기 직전에, 반드시 UI에 표시될 안내 메시지를 고객에게 먼저 말해야 합니다:
        - Menu 이동 전: "메뉴 전문가에게 연결해 드릴게요..."
@@ -116,7 +121,7 @@ async def professional_response_guardrail(
 
 # Triage 에이전트 선언 (지시사항 주입)
 triage_agent = Agent(
-    name="레스토랑 매니저",
+    name="Triage Agent",
     instructions=triage_agent_instructions,
     input_guardrails=[
         off_topic_guardrail,

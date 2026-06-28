@@ -29,6 +29,11 @@ def menu_agent_instructions(
 
 
 menu_agent = Agent(
-    name="메뉴 담당 에이전트",
+    name="Menu Management Agent",
+    handoff_description="""
+    Handles all menu-related inquiries including food descriptions,
+    ingredients, allergy information, prices, dietary recommendations,
+    and menu suggestions.
+    """,
     instructions=menu_agent_instructions,
 )

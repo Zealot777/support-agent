@@ -29,6 +29,13 @@ def reservation_agent_instructions(
 
 
 reservation_agent = Agent(
-    name="예약 담당 에이전트",
+    name="Reservation Management Agent",
+    handoff_description="""
+    Handles table reservations,
+    reservation changes,
+    reservation cancellation,
+    reservation availability,
+    and party size scheduling.
+    """,
     instructions=reservation_agent_instructions,
 )

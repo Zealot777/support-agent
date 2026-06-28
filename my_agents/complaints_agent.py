@@ -25,7 +25,15 @@ def complaints_agent_instructions(
     """
 
 complaints_agent = Agent(
-    name="고객 문의 에이전트",
+    name="Complaints Management Agent",
+    handoff_description="""
+    Handles customer complaints,
+    refund requests,
+    service dissatisfaction,
+    food quality issues,
+    compensation,
+    and escalation to management.
+    """,
     instructions=complaints_agent_instructions,
 )
 
