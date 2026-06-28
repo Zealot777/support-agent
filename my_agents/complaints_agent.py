@@ -25,7 +25,7 @@ def complaints_agent_instructions(
     """
 
 complaints_agent = Agent(
-    name="Complaints Management Agent",
+    name="고객 문의 에이전트",
     instructions=complaints_agent_instructions,
 )
 

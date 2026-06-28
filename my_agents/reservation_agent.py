@@ -29,6 +29,6 @@ def reservation_agent_instructions(
 
 
 reservation_agent = Agent(
-    name="Reservation Management Agent",
+    name="예약 담당 에이전트",
     instructions=reservation_agent_instructions,
 )

@@ -73,7 +73,7 @@ if "agent" not in st.session_state:
 
 
 async def main():
-    st.title("🍔 Restaurant Bot")
+    st.title("🍔 데일리 레스토랑")
 
     # 3. 사이드바 구성 (현재 연결된 에이전트 정보 시각화)
     with st.sidebar:
@@ -134,8 +134,7 @@ async def main():
                     st.session_state["agent"] = stream.last_agent
 
             except InputGuardrailTripwireTriggered:
-                text_placeholder.write("⚠️ 부적절한 요청이 감지되어 답변을 중단합니다.")
-            
+                text_placeholder.write("⚠️ 부적절한 요청이 감지되어 답변을 중단합니다.")            
             except OutputGuardrailTripwireTriggered:
                 text_placeholder.write("⚠️ 부적절한 답변이 감지되어 답변을 중단합니다.")
             except Exception as e:

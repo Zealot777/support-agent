@@ -29,6 +29,6 @@ def menu_agent_instructions(
 
 
 menu_agent = Agent(
-    name="Menu Management Agent",
+    name="메뉴 담당 에이전트",
     instructions=menu_agent_instructions,
 )

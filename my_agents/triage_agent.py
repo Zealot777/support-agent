@@ -116,7 +116,7 @@ async def professional_response_guardrail(
 
 # Triage 에이전트 선언 (지시사항 주입)
 triage_agent = Agent(
-    name="Triage Agent",
+    name="레스토랑 매니저",
     instructions=triage_agent_instructions,
     input_guardrails=[
         off_topic_guardrail,

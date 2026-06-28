@@ -29,6 +29,6 @@ def order_agent_instructions(
 
 
 order_agent = Agent(
-    name="Order Management Agent",
+    name="주문 담당 에이전트",
     instructions=order_agent_instructions,
 )
